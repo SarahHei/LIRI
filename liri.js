@@ -10,7 +10,6 @@ function concertThis(){
     var moment = require('moment');
     moment().format();
     
-    //Bandsintown
     var request = require("request");
     if (process.argv[2] = 'concert-this')
     {
@@ -23,8 +22,12 @@ function concertThis(){
           console.log(error); 
         }
         var result = JSON.parse(body);
-        
+        if (result.length === 0)  {
+          console.log('Hey that artist isntt playing right now try again')
+        }
+
         for (i = 0; i < result.length; i++) {
+
           console.log('Venue name: ', result[i].venue.name);
           console.log('Venue city, state: ', result[i].venue.city, result[i].venue.region);
           console.log('Date of event', moment(result[i].datetime).format('MM / DD / YYYY'));
@@ -33,7 +36,7 @@ function concertThis(){
     }
  }
 
- function spotify(song){
+ function runSpotify(song){
     var Spotify = require('node-spotify-api');
     var spotify = new Spotify({
         id: keys.spotify.id,
@@ -82,7 +85,6 @@ fs.readFile("random.txt", "utf8", function(error, data) {
     return console.log(error);
   }
 
-  
   var dataArr = data.split(",");
 
   if (data) {
@@ -114,29 +116,32 @@ fs.readFile("random.txt", "utf8", function(error, data) {
 });
 };
 
-switch(command){ // switch to take in user command from node
-
-  case "concert-this":
-     concertThis()
+var pickCommand = function(command, data) {
+  switch(command) {
+    case "concert-this":
+     concertThis(data)
   break;
 
   case "spotify-this-song":
-     var song = process.argv[3];
-     
-     if(process.argv.length > 2){
-         spotify(song)
-     }
-     else{
-         spotify()
-     }
-      console.log("Spofity")
+  //if(process.argv.length > 2){
+  //       spotify(data)
+  //   }
+  //   else{
+  //       spotify()
+  //   }
+  //    console.log("Spotify")
+  runSpotify(data)
   break;
 
   case "movie-this":
-     movieThis()
+     movieThis(data)
   break;
 
   case "do-what-it-says":
-     doWhatItSays()
+     doWhatItSays(data)
   break;
-};
+  }
+}
+
+pickCommand(process.argv[2], process.argv.slice(3).join(" "))
+
